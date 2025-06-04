@@ -32,6 +32,7 @@ RSpec.describe Reservation do
         expect(reservation.start_time).to eq(Time.parse('2000-01-01 13:30:00 UTC'))
         expect(reservation.end_time).to be_nil
         expect(reservation.comment).to eq(nil)
+        expect(reservation.repo).to eq(nil)
       end
     end
 
@@ -43,6 +44,7 @@ RSpec.describe Reservation do
         expect(reservation.start_time).to eq(Time.parse('2000-01-01 13:30:00 UTC'))
         expect(reservation.end_time).to eq(Time.parse('2000-01-01 15:30:00 UTC'))
         expect(reservation.comment).to eq('')
+        expect(reservation.repo).to eq(nil)
       end
     end
 
@@ -54,6 +56,7 @@ RSpec.describe Reservation do
         expect(reservation.start_time).to eq(Time.parse('2000-01-01 13:30:00 UTC'))
         expect(reservation.end_time).to eq(Time.parse('2000-01-01 16:30:00 UTC'))
         expect(reservation.comment).to eq('')
+        expect(reservation.repo).to eq(nil)
       end
     end
 
@@ -65,6 +68,31 @@ RSpec.describe Reservation do
         expect(reservation.start_time).to eq(Time.parse('2000-01-01 13:30:00 UTC'))
         expect(reservation.end_time).to eq(Time.parse('2000-01-01 14:30:00 UTC'))
         expect(reservation.comment).to eq('testing new feature')
+        expect(reservation.repo).to eq(nil)
+      end
+    end
+
+    context 'parses optional repo with no comment' do
+      let(:message) { '@reservebot staging-nz now 1h --repo okkaz' }
+
+      it do
+        expect(reservation.environment).to eq('staging-nz')
+        expect(reservation.start_time).to eq(Time.parse('2000-01-01 13:30:00 UTC'))
+        expect(reservation.end_time).to eq(Time.parse('2000-01-01 14:30:00 UTC'))
+        expect(reservation.comment).to eq('')
+        expect(reservation.repo).to eq('okkaz')
+      end
+    end
+
+    context 'parses optional repo' do
+      let(:message) { '@reservebot demo-au now 1h testing new feature --repo okkaz' }
+
+      it do
+        expect(reservation.environment).to eq('demo-au')
+        expect(reservation.start_time).to eq(Time.parse('2000-01-01 13:30:00 UTC'))
+        expect(reservation.end_time).to eq(Time.parse('2000-01-01 14:30:00 UTC'))
+        expect(reservation.comment).to eq('testing new feature')
+        expect(reservation.repo).to eq('okkaz')
       end
     end
 
@@ -76,6 +104,7 @@ RSpec.describe Reservation do
         expect(reservation.start_time).to be_nil
         expect(reservation.end_time).to be_nil
         expect(reservation.comment).to eq('free')
+        expect(reservation.repo).to eq(nil)
       end
     end
   end
